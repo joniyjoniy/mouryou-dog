@@ -24,5 +24,5 @@ $ go run sample-server.go
 ## plugin
 
 ```
-$ go run main.go
+$ go run plugin.go
 ```
