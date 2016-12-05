@@ -8,10 +8,11 @@ import (
 	"time"
 	"os"
 	"os/signal"
+	"os/exec"
 	"net/url"
 	"strings"
 	"fmt"
-	
+
 	"github.com/gorilla/websocket"
 	"github.com/shirou/gopsutil/mem"
 	// "github.com/shirou/gopsutil/cpu"
@@ -35,9 +36,10 @@ type ServerStat struct {
 	// Time
 	Time                 string  `json:"time"`
 
-	// Cpu	
+	// Cpu
 	// Cpu    []cpu.TimesStat         `json:"-"`
 
+	ApacheStat float64 `json:"apacheStat"`
 }
 
 var addr = flag.String("addr", "localhost:8080", "monitoring address")
@@ -111,6 +113,7 @@ func GetServerStat() (ServerStat) {
   d = d.GetMemoryStat()
 	d = d.GetDiskIOStat()
 	d = d.GetTime()
+	d = d.GetApacheStat()
 	return d
 }
 
@@ -153,5 +156,32 @@ func ConvertMapToString(m map[string]disk.IOCountersStat) (string) {
 func (s ServerStat)GetTime() (ServerStat) {
 	now := time.Now()
 	s.Time =fmt.Sprint(now)
+	return s
+}
+
+func (s ServerStat)GetApacheStat() (ServerStat) {
+	var dataLine int
+	out, _ := exec.Command("apachectl", "status").Output()
+	d :=string(out)
+
+	lines := strings.Split(strings.TrimRight(d, "\n"), "\n")
+
+	for k, v := range lines {
+		if v == "Scoreboard Key:" {
+			dataLine = k
+			break
+		}
+
+	}
+
+	board := lines[dataLine-4]
+	board = board + lines[dataLine-3]
+	board = board + lines[dataLine-2]
+	all := len(strings.Split(board, ""))
+	idles := strings.Count(board, "_") + strings.Count(board, ".")
+
+	r := float64((all - idles)) / float64(all)
+
+	s.ApacheStat = r
 	return s
 }
