@@ -29,9 +29,11 @@ type ServerStat struct {
 	Available            uint64  `json:"available"`
 	UsedPercent          float64 `json:"usedPercent"`
 	// DiskIO map[string]disk.IOCountersStat
-	DiskIO string `json:"diskIO"`
-	// IoTime           uint64 `json:"ioTime"`
-	// WeightedIO       uint64 `json:"weightedIO"`
+	DiskIO               string  `json:"diskIO"`
+	// IoTime            uint64  `json:"ioTime"`
+	// WeightedIO        uint64  `json:"weightedIO"`
+	// Time
+	Time                 string  `json:"time"`
 
 	// Cpu	
 	// Cpu    []cpu.TimesStat         `json:"-"`
@@ -107,7 +109,8 @@ func GetServerStat() (ServerStat) {
 
 	d = d.GetHostStat()
   d = d.GetMemoryStat()
-	d = d.GetDiskIOStat()	
+	d = d.GetDiskIOStat()
+	d = d.GetTime()
 	return d
 }
 
@@ -145,4 +148,10 @@ func ConvertMapToString(m map[string]disk.IOCountersStat) (string) {
   str = strings.TrimRight(str, ",")
 	str = str + "}"
 	return str
+}
+
+func (s ServerStat)GetTime() (ServerStat) {
+	now := time.Now()
+	s.Time =fmt.Sprint(now)
+	return s
 }
