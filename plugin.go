@@ -109,34 +109,31 @@ func main() {
 func GetServerStat() (ServerStat) {
 	var d ServerStat
 
-	d = d.GetHostStat()
-  d = d.GetMemoryStat()
-	d = d.GetDiskIOStat()
-	d = d.GetTime()
-	d = d.GetApacheStat()
+	d.GetHostStat()
+  d.GetMemoryStat()
+	d.GetDiskIOStat()
+	d.GetTime()
+	d.GetApacheStat()
 	return d
 }
 
-func (s ServerStat) GetHostStat() (ServerStat) {
+func (s *ServerStat) GetHostStat() {
 	h, _ := host.Info()
 	s.HostName             = h.Hostname
 	s.HostID               = h.HostID
 	s.VirtualizationSystem = h.VirtualizationSystem
-	return s
 }
 
-func (s ServerStat) GetMemoryStat() (ServerStat) {
+func (s *ServerStat) GetMemoryStat() {
 	m, _ := mem.VirtualMemory()
 	s.Total = m.Total
 	s.Available = m.Available
 	s.UsedPercent = m.UsedPercent
-	return s
 }
 
-func (s ServerStat) GetDiskIOStat() (ServerStat) {
+func (s *ServerStat) GetDiskIOStat() {
 	i, _ := disk.IOCounters()
 	s.DiskIO = ConvertMapToString(i)
-	return s
 }
 
 func ConvertMapToString(m map[string]disk.IOCountersStat) (string) {
@@ -153,13 +150,12 @@ func ConvertMapToString(m map[string]disk.IOCountersStat) (string) {
 	return str
 }
 
-func (s ServerStat)GetTime() (ServerStat) {
+func (s *ServerStat)GetTime() {
 	now := time.Now()
 	s.Time =fmt.Sprint(now)
-	return s
 }
 
-func (s ServerStat)GetApacheStat() (ServerStat) {
+func (s *ServerStat)GetApacheStat() {
 	var dataLine int
 	out, _ := exec.Command("apachectl", "status").Output()
 	d :=string(out)
@@ -171,7 +167,6 @@ func (s ServerStat)GetApacheStat() (ServerStat) {
 			dataLine = k
 			break
 		}
-
 	}
 
 	board := lines[dataLine-4]
@@ -183,5 +178,4 @@ func (s ServerStat)GetApacheStat() (ServerStat) {
 	r := float64((all - idles)) / float64(all)
 
 	s.ApacheStat = r
-	return s
 }
