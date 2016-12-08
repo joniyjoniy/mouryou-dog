@@ -22,24 +22,28 @@ import (
 
 type ServerStat struct {
 	// Host
-	HostName             string  `json:"hostname"`
-	HostID               string  `json:"hostid"`
-	VirtualizationSystem string  `json:"virtualizationSystem"`
+	HostName             string   `json:"hostname"`
+	HostID               string   `json:"hostid"`
+	VirtualizationSystem string   `json:"virtualizationSystem"`
   // mem.VirtualMemoryStat
-	Total                uint64  `json:"total"`
-	Available            uint64  `json:"available"`
-	UsedPercent          float64 `json:"usedPercent"`
+	Total                uint64   `json:"total"`
+	Available            uint64   `json:"available"`
+	UsedPercent          float64  `json:"usedPercent"`
 	// DiskIO map[string]disk.IOCountersStat
-	DiskIO               string  `json:"diskIO"`
-	// IoTime            uint64  `json:"ioTime"`
-	// WeightedIO        uint64  `json:"weightedIO"`
+	DiskIO              []DiskStat `json:"diskIO"`
 	// Time
-	Time                 string  `json:"time"`
+	Time                 string   `json:"time"`
 
 	// Cpu
 	// Cpu    []cpu.TimesStat         `json:"-"`
 
 	ApacheStat float64 `json:"apacheStat"`
+}
+
+type DiskStat struct {
+	Name       string `json:"name"`
+  IoTime     uint64 `json:"ioTime"`
+	WeightedIO uint64 `json:"weightedIO"`
 }
 
 var addr = flag.String("addr", "localhost:8080", "monitoring address")
@@ -132,27 +136,16 @@ func (s *ServerStat) GetMemoryStat() {
 }
 
 func (s *ServerStat) GetDiskIOStat() {
+	var ds []DiskStat
 	i, _ := disk.IOCounters()
-	s.DiskIO = ConvertMapToString(i)
-}
-
-func ConvertMapToString(m map[string]disk.IOCountersStat) (string) {
-	var str string
-
-	str = "{"
-	for k, v := range m {
-		str  = str + string(k) + ":{"
-		str = str + "ioTime:" + fmt.Sprint(v.IoTime) + ","
-		str = str + "weightedIO:" + fmt.Sprint(v.WeightedIO) + "},"
+	for k, v := range i {
+		var d DiskStat
+		d.Name       = k
+		d.IoTime     = v.IoTime
+		d.WeightedIO = v.WeightedIO
+		ds = append(ds, d)
 	}
-  str = strings.TrimRight(str, ",")
-	str = str + "}"
-	return str
-}
-
-func (s *ServerStat)GetTime() {
-	now := time.Now()
-	s.Time =fmt.Sprint(now)
+	s.DiskIO = ds
 }
 
 func (s *ServerStat)GetApacheStat() {
