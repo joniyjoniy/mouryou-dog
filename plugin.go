@@ -53,10 +53,14 @@ func main() {
 	for {
 		select {
 		case <-ticker.C:
-			d := lib.GetServerStat()
-			j, _ :=json.Marshal(d)
+			d, err := lib.GetServerStat()
+			if err != nil {
+				log.Println("write:", err)
+				return
+			}
+			j, _ := json.Marshal(d)
 			buf.Write(j)
-			err := c.WriteMessage(websocket.TextMessage, j)
+			err = c.WriteMessage(websocket.TextMessage, j)
 			if err != nil {
 				log.Println("write:", err)
 				return

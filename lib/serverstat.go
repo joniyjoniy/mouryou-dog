@@ -1,15 +1,7 @@
 package lib
 
 import (
-	"fmt"
-	"strings"
-	"time"
-	"os/exec"
-
-	"github.com/shirou/gopsutil/mem"
-	// "github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/disk"
-	"github.com/shirou/gopsutil/host"
+	"encoding/json"
 )
 
 type ServerStat struct {
@@ -38,70 +30,12 @@ type DiskStat struct {
 	WeightedIO uint64 `json:"weightedIO"`
 }
 
-func GetServerStat() (ServerStat) {
-	var d ServerStat
-
-	d.GetHostStat()
-  d.GetMemoryStat()
-	d.GetDiskIOStat()
-	d.GetTime()
-	d.GetApacheStat()
-	return d
+func (d ServerStat) String() string {
+	s, _ := json.Marshal(d)
+	return string(s)
 }
 
-func (s *ServerStat) GetHostStat() {
-	h, _ := host.Info()
-	s.HostName             = h.Hostname
-	s.HostID               = h.HostID
-	s.VirtualizationSystem = h.VirtualizationSystem
-}
-
-func (s *ServerStat) GetMemoryStat() {
-	m, _ := mem.VirtualMemory()
-	s.Total = m.Total
-	s.Available = m.Available
-	s.UsedPercent = m.UsedPercent
-}
-
-func (s *ServerStat) GetDiskIOStat() {
-	var ds []DiskStat
-	i, _ := disk.IOCounters()
-	for k, v := range i {
-		var d DiskStat
-		d.Name       = k
-		d.IoTime     = v.IoTime
-		d.WeightedIO = v.WeightedIO
-		ds = append(ds, d)
-	}
-	s.DiskIO = ds
-}
-
-func (s *ServerStat)GetApacheStat() {
-	var dataLine int
-	out, _ := exec.Command("apachectl", "status").Output()
-	d :=string(out)
-
-	lines := strings.Split(strings.TrimRight(d, "\n"), "\n")
-
-	for k, v := range lines {
-		if v == "Scoreboard Key:" {
-			dataLine = k
-			break
-		}
-	}
-
-	board := lines[dataLine-4]
-	board = board + lines[dataLine-3]
-	board = board + lines[dataLine-2]
-	all := len(strings.Split(board, ""))
-	idles := strings.Count(board, "_") + strings.Count(board, ".")
-
-	r := float64((all - idles)) / float64(all)
-
-	s.ApacheStat = r
-}
-
-func (s *ServerStat)GetTime() {
-	now := time.Now()
-	s.Time =fmt.Sprint(now)
+func (d DiskStat) String() string {
+	s, _ := json.Marshal(d)
+	return string(s)
 }
