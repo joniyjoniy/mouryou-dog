@@ -17,11 +17,10 @@ type ServerStat struct {
 	DiskIO              []DiskStat `json:"diskIO"`
 	// Time
 	Time                 string   `json:"time"`
-
 	// Cpu
 	// Cpu    []cpu.TimesStat         `json:"-"`
-
 	ApacheStat float64 `json:"apacheStat"`
+	ErrorInfo []error `json:"errorInfo"`
 }
 
 type DiskStat struct {

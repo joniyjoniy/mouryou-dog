@@ -14,19 +14,58 @@ func TestGetHostStat (t *testing.T) {
 
 	empty := &ServerStat{}
 	if v == empty {
-		t.Errorf("error %v", v)
+		t.Errorf("error : cannot get hostStat")
 	}
 
 	if v.HostName == "" {
-		t.Errorf("error %v", v.HostName)
+		t.Errorf("error : cannot get hostName")
 	}
 
 	if v.HostID == "" {
-		t.Errorf("error %v", v.HostID)
+		t.Errorf("error : cannot get hostID")
 	}
 
 	if v.VirtualizationSystem == "" {
-		t.Errorf("error %v", v.VirtualizationSystem)
+		t.Errorf("error : cannot get virtualizationSystem")
+	}
+}
+
+func TestMemoryStat (t *testing.T) {
+	v := new(ServerStat)
+	err := v.GetMemoryStat()
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+
+	empty := &ServerStat{}
+	if v == empty {
+		t.Errorf("error : cannot get memoryStat")
+	}
+}
+
+func TestDiskIOStat (t *testing.T) {
+	v := new(ServerStat)
+	err := v.GetDiskIOStat()
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+
+	empty := &ServerStat{}
+	if v == empty {
+		t.Errorf("error : cannot get serverStat")
+	}
+}
+
+func TestApacheStat (t *testing.T) {
+	v := new(ServerStat)
+	err := v.GetApacheStat()
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+
+	empty := &ServerStat{}
+	if v == empty {
+		t.Errorf("error : cannot get apacheStat")
 	}
 }
 
@@ -72,7 +111,7 @@ func TestServerStat_String (t *testing.T) {
 		ApacheStat: 123.456,
 	}
 
-	e := `{"hostname":"host","hostid":"123","virtualizationSystem":"vbox","total":123456,"available":123456,"usedPercent":123.456,"diskIO":[{"name":"disk1","ioTime":123,"weightedIO":123},{"name":"disk2","ioTime":200,"weightedIO":300}],"time":"00:00:00","apacheStat":123.456}`
+	e := `{"hostname":"host","hostid":"123","virtualizationSystem":"vbox","total":123456,"available":123456,"usedPercent":123.456,"diskIO":[{"name":"disk1","ioTime":123,"weightedIO":123},{"name":"disk2","ioTime":200,"weightedIO":300}],"time":"00:00:00","apacheStat":123.456,"errorInfo":null}`
 
 	if e != fmt.Sprintf("%v", vs) {
 		t.Errorf("ServerStat string is invalid: %v", vs)

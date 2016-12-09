@@ -55,14 +55,14 @@ func main() {
 		case <-ticker.C:
 			d, err := lib.GetServerStat()
 			if err != nil {
-				log.Println("write:", err)
-				return
+				log.Println("get status error:", err)
+				d.ErrorInfo = err
 			}
 			j, _ := json.Marshal(d)
 			buf.Write(j)
-			err = c.WriteMessage(websocket.TextMessage, j)
-			if err != nil {
-				log.Println("write:", err)
+			er := c.WriteMessage(websocket.TextMessage, j)
+			if er != nil {
+				log.Println("write:", er)
 				return
 			}
 		case <-interrupt:
