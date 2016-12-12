@@ -1,0 +1,5 @@
+gom 'github.com/gorilla/websocket'
+gom 'github.com/shirou/gopsutil/mem'
+gom 'github.com/shirou/gopsutil/cpu'
+gom 'github.com/shirou/gopsutil/disk'
+gom 'github.com/shirou/gopsutil/host'

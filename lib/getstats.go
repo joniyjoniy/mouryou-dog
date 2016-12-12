@@ -2,14 +2,14 @@ package lib
 
 import (
 	"fmt"
+	"os/exec"
 	"strings"
 	"time"
-	"os/exec"
 
-	"github.com/shirou/gopsutil/mem"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
+	"github.com/shirou/gopsutil/mem"
 )
 
 func GetServerStat() (ServerStat, []error) {
@@ -45,18 +45,18 @@ func GetServerStat() (ServerStat, []error) {
 	return d, nil
 }
 
-func (s *ServerStat) GetHostStat() (error) {
-  h, err := host.Info()
+func (s *ServerStat) GetHostStat() error {
+	h, err := host.Info()
 	if err != nil {
 		return err
 	}
-	s.HostName             = h.Hostname
-	s.HostID               = h.HostID
+	s.HostName = h.Hostname
+	s.HostID = h.HostID
 	s.VirtualizationSystem = h.VirtualizationSystem
 	return nil
 }
 
-func (s *ServerStat) GetMemoryStat() (error) {
+func (s *ServerStat) GetMemoryStat() error {
 	m, err := mem.VirtualMemory()
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func (s *ServerStat) GetMemoryStat() (error) {
 	return nil
 }
 
-func (s *ServerStat) GetDiskIOStat() (error) {
+func (s *ServerStat) GetDiskIOStat() error {
 	var ds []DiskStat
 	i, err := disk.IOCounters()
 	if err != nil {
@@ -75,8 +75,8 @@ func (s *ServerStat) GetDiskIOStat() (error) {
 	}
 	for k, v := range i {
 		var d DiskStat
-		d.Name       = k
-		d.IoTime     = v.IoTime
+		d.Name = k
+		d.IoTime = v.IoTime
 		d.WeightedIO = v.WeightedIO
 		ds = append(ds, d)
 	}
@@ -84,7 +84,7 @@ func (s *ServerStat) GetDiskIOStat() (error) {
 	return nil
 }
 
-func (s *ServerStat)GetApacheStat() (error) {
+func (s *ServerStat) GetApacheStat() error {
 	var dataLine int
 	out, err := exec.Command("apachectl", "status").Output()
 	if err != nil {
@@ -112,16 +112,16 @@ func (s *ServerStat)GetApacheStat() (error) {
 	return nil
 }
 
-func (s *ServerStat)GetTime() {
+func (s *ServerStat) GetTime() {
 	now := time.Now()
-	s.Time =fmt.Sprint(now)
+	s.Time = fmt.Sprint(now)
 }
 
-func (s *ServerStat)GetCpuStat() (error) {
+func (s *ServerStat) GetCpuStat() error {
 	c, err := cpu.Times(true)
 	if err != nil {
 		return err
 	}
-  s.Cpu = c
+	s.Cpu = c
 	return nil
 }

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"encoding/json"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"log"
-	"time"
+	"net/url"
 	"os"
 	"os/signal"
-	"net/url"
+	"time"
 
-	"github.com/gorilla/websocket"
 	"./lib"
+	"github.com/gorilla/websocket"
 )
 
 var addr = flag.String("addr", "localhost:8080", "monitoring address")
