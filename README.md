@@ -7,9 +7,16 @@
 
 現在試作段階のため，測定値は未定です.
 
-# sample-server
+# Install
 
-送信先のサーバには[gorilla/websocketのechoサンプル](https://github.com/gorilla/websocket/blob/master/examples/echo/server.go)を利用しています．
+Go言語をインストールしておく必要があります．
+
+```
+git clone git://github.com/joniyjoniy/mouryou-dog.git
+cd mouryou-dog
+make gom link
+make build
+```
 
 # Run
 
@@ -18,11 +25,11 @@
 ## Server
 
 ```
-$ go run sample-server.go
+bin/sample-server
 ```
 
 ## plugin
 
 ```
-$ go run plugin.go
+bin/mouryou-dog
 ```
