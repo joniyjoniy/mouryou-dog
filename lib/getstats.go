@@ -7,7 +7,7 @@ import (
 	"os/exec"
 
 	"github.com/shirou/gopsutil/mem"
-	// "github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/disk"
 	"github.com/shirou/gopsutil/host"
 )
@@ -31,6 +31,10 @@ func GetServerStat() (ServerStat, []error) {
 	errApache := d.GetApacheStat()
 	if errApache != nil {
 		err = append(err, errApache)
+	}
+	errCpu := d.GetCpuStat()
+	if errCpu != nil {
+		err = append(err, errCpu)
 	}
 	d.GetTime()
 
@@ -111,4 +115,13 @@ func (s *ServerStat)GetApacheStat() (error) {
 func (s *ServerStat)GetTime() {
 	now := time.Now()
 	s.Time =fmt.Sprint(now)
+}
+
+func (s *ServerStat)GetCpuStat() (error) {
+	c, err := cpu.Times(true)
+	if err != nil {
+		return err
+	}
+  s.Cpu = c
+	return nil
 }
