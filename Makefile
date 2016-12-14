@@ -4,8 +4,8 @@ gom:
 	@if [`which go` = "go not found"]; then \
 		echo "Please install Golang"; \
 	else \
-		go get github.com/mattn/gom
-		gom install
+		go get github.com/mattn/gom; \
+		gom install; \
 	fi
 
 link:
